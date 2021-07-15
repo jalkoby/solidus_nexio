@@ -7,6 +7,7 @@ Gem::Specification.new do |spec|
   spec.version       = SolidusNexio::VERSION
   spec.authors       = %w[Whitespectre]
   spec.email         = %w[hello@whitespectre.com]
+  spec.licenses      = %w[MIT]
 
   spec.summary       = 'Solidus integration with Nexio'
   spec.homepage      = 'https://github.com/jalkoby/solidus_nexio'

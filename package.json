@@ -1,6 +1,6 @@
 {
   "name": "solidus_nexio",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Solidus integration with Nexio",
   "main": "dist/bundle.js",
   "scripts": {
@@ -13,6 +13,7 @@
     "url": "git+https://github.com/jalkoby/solidus_nexio.git"
   },
   "author": "Whitespectre",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/jalkoby/solidus_nexio/issues"
   },
