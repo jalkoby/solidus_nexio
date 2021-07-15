@@ -1,0 +1,7 @@
+<%= setup_nexio_own_form(payment_method, order: current_order, user: current_spree_user) %>
+
+<h1><%= payment_method.name %></h1>
+
+<fieldset class="nexio-own-form" data-hook="nexio_own_form" data-nexio-own-form-id="<%= payment_method.id %>">
+  <%= render "spree/shared/nexio_own_form", payment_method: payment_method %>
+</fieldset>

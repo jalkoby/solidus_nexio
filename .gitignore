@@ -8,3 +8,12 @@
 /tmp/
 /Gemfile.lock
 /spec/dummy
+
+# Don't include compiled results (but compiled result will be included in gem file)
+/app/assets/javascripts
+
+# js package
+/dist
+/node_modules
+/yarn.lock
+/package-lock.json

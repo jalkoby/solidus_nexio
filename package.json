@@ -1,0 +1,32 @@
+{
+  "name": "solidus_nexio",
+  "version": "1.0.0",
+  "description": "Solidus integration with Nexio",
+  "main": "dist/bundle.js",
+  "scripts": {
+    "develop": "webpack --mode development --watch --progress",
+    "gem-build": "webpack --mode production",
+    "prepublishOnly": "NPM_PACKAGE=true webpack --mode production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jalkoby/solidus_nexio.git"
+  },
+  "author": "Whitespectre",
+  "bugs": {
+    "url": "https://github.com/jalkoby/solidus_nexio/issues"
+  },
+  "homepage": "https://github.com/jalkoby/solidus_nexio#readme",
+  "devDependencies": {
+    "@babel/core": "^7.14.6",
+    "@babel/preset-env": "^7.14.7",
+    "babel-loader": "^8.2.2",
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
+    "copy-webpack-plugin": "^9.0.1",
+    "webpack": "^5.44.0",
+    "webpack-cli": "^4.7.2"
+  },
+  "dependencies": {
+    "jsencrypt": "^3.2.0"
+  }
+}
