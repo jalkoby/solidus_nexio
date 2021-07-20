@@ -18,6 +18,14 @@ module SolidusNexio
       gateway.generate_token(options)
     end
 
+    def purchase(money, payment, options = {})
+      super(money, payment, add_transaction_options(options))
+    end
+
+    def authorize(money, payment, options = {})
+      super(money, payment, add_transaction_options(options))
+    end
+
     def store(options)
       card_attrs = options[:card]
                    .slice(:encrypted_number, :number, :name, :month, :year)
@@ -36,6 +44,14 @@ module SolidusNexio
 
     def gateway_class
       ActiveMerchant::Billing::NexioGateway
+    end
+
+    def add_transaction_options(options)
+      result = options.slice(:currency, :billing_address, :shipping_address)
+      if options[:originator].is_a?(::Spree::Payment) && options[:originator].order
+        result.merge!(SolidusNexio::NexioData.purchase(options[:originator].order))
+      end
+      result
     end
   end
 end

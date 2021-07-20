@@ -20,6 +20,14 @@ module SolidusNexio
       acc
     end
 
+    def purchase(order)
+      acc = { customer: {} }
+      add_order_data(acc, order)
+      add_order_cart(acc, order)
+      add_customer_data(acc, order)
+      acc
+    end
+
     private
 
     def add_order_data(acc, order)
@@ -53,6 +61,10 @@ module SolidusNexio
       }
     end
 
+    def add_order_cart(acc, order)
+      acc[:order][:line_items] = order.line_items.map { |line_item| line_item_data(line_item) }
+    end
+
     def line_item_data(line_item)
       {
         id: line_item.id,
@@ -64,8 +76,8 @@ module SolidusNexio
 
     if SolidusSupport.combined_first_and_last_name_in_address?
       def address_to_name(address)
-        parts = address.name.split(' ')
-        { first_name: parts[0], last_name: parts[1..-1].join(' ') }
+        name = Spree::Address::Name.new(address.name)
+        { first_name: name.first_name, last_name: name.last_name }
       end
     else
       def address_to_name(address)
