@@ -1,0 +1,23 @@
+<fieldset data-hook="credit_card">
+  <legend align="center"><%= payment.payment_method.name %></legend>
+
+  <div class="row">
+    <div class="alpha six columns">
+      <dl>
+        <dt><%= I18n.t("spree.identifier") %>:</dt>
+        <dd><%= payment.number %></dd>
+
+        <% if payment.source.is_a?(Spree::CreditCard) %>
+          <dt><%= Spree::CreditCard.human_attribute_name(:cc_type) %>:</dt>
+          <dd><%= payment.source.cc_type %></dd>
+
+          <dt><%= Spree::CreditCard.human_attribute_name(:name) %>:</dt>
+          <dd><%= payment.source.name %></dd>
+
+          <dt><%= Spree::CreditCard.human_attribute_name(:last_digits) %>:</dt>
+          <dd><%= payment.source.last_digits %></dd>
+        <% end %>
+      </dl>
+    </div>
+  </div>
+</fieldset>

@@ -1,0 +1,11 @@
+<% id = payment_method.id %>
+
+<fieldset class="no-border-bottom" data-payment-method-id="<%= id %>">
+  <div class="field" data-hook="previous_cards">
+    <% if previous_cards.any? %>
+      <% previous_cards.each do |card| %>
+        <label><%= radio_button_tag :card, card.id, card == previous_cards.first %> <%= card.display_number %><br /></label>
+      <% end %>
+    <% end %>
+  </div>
+</fieldset>
