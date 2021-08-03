@@ -1,4 +1,4 @@
-import { addNexioOwnForm, setupNexioOwnForms } from './solidus_nexio'
+import { addNexioOwnForm, setupNexioOwnForms } from './solidus-nexio'
 
 window.addNexioOwnForm = addNexioOwnForm;
 

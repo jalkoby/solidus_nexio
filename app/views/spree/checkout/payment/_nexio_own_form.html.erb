@@ -1,7 +1,6 @@
-<%= setup_nexio_own_form(payment_method, order: current_order, user: current_spree_user) %>
-
-<h1><%= payment_method.name %></h1>
-
 <fieldset class="nexio-own-form" data-hook="nexio_own_form" data-nexio-own-form-id="<%= payment_method.id %>">
-  <%= render "spree/shared/nexio_own_form", payment_method: payment_method %>
+  <%= render 'spree/checkout/payment/gateway', payment_method: payment_method %>
+  <input name="payment_source[<%= payment_method.id %>][gateway_payment_profile_id]" type="hidden" data-hook="card_gateway_payment_profile_id" />
+  <input name="payment_source[<%= payment_method.id %>][cc_type]" type="hidden" data-hook="card_type" class="ccType" />
 </fieldset>
+<%= setup_nexio_own_form(payment_method, order: current_order, user: current_spree_user) %>

@@ -9,7 +9,7 @@ module SolidusNexio
     private
 
     def payment_method
-      @payment_method ||= SolidusNexio::PaymentMethod.find(params[:payment_method_id])
+      @payment_method ||= PaymentMethod.find(params[:payment_method_id])
     end
   end
 end

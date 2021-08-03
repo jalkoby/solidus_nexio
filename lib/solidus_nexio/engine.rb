@@ -23,6 +23,7 @@ module SolidusNexio
     config.after_initialize do |app|
       app.config.spree.payment_methods << SolidusNexio::PaymentMethod
       ::Spree::PermittedAttributes.source_attributes.push(:encrypted_number)
+      SolidusNexio::Engine.routes.default_url_options = app.routes.default_url_options
     end
   end
 end

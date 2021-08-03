@@ -3,7 +3,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 let entry, output;
 if (process.env.NPM_PACKAGE) {
-  entry = './src/solidus_nexio.js';
+  entry = './src/solidus-nexio.js';
   output = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js'

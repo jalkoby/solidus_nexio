@@ -2,3 +2,11 @@ en:
   activerecord:
     models:
       solidus_nexio/payment_method: Nexio
+  nexio:
+    errors:
+      default_error: Something bad happened!
+      base:
+        card_save_failed: Can't process the credit card
+        token_generation_failed: Can't initialize Nexio form
+        blank: is blank
+        invalid: is invalid
