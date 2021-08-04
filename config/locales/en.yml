@@ -10,3 +10,5 @@ en:
         token_generation_failed: Can't initialize Nexio form
         blank: is blank
         invalid: is invalid
+        fail_process_payment: There's an error processing the payment
+        fail_process_card: There's an error processing the credit card

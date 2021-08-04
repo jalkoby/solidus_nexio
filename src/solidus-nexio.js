@@ -78,7 +78,7 @@ const onCardValidationFail = (id, errors, _card) => {
 const onCardTokenGenerationFail = (id, _resp) =>
   // refresh one time token
   setupFields(id, getFields(id)).then(() => {
-    showError('base', 'card_save_failed', id);
+    showError('base', 'fail_process_card', id);
     return Promise.reject();
   });
 
@@ -139,6 +139,9 @@ const submitFormToProcess = (form, id) => {
           return submitForm(form);
         case 'three_d_secure':
           return onThreeDSecureRedirect(form, resp.json.data);
+        case 'error':
+          showError('base', resp.json.data && resp.json.data.error || 'fail_process_payment', id);
+          return unlockForm(id);
         default:
           unlockForm(id, true);
       }

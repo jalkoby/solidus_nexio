@@ -23,7 +23,7 @@ module SolidusNexio
         ProcessResult.new(:success, nil)
       rescue Spree::Core::GatewayError => error
         redirect_url = nexio_three_d_secure_redirect_url(payment)
-        return ProcessResult.new(:error, error: :fail_process) unless redirect_url
+        return ProcessResult.new(:error, error: :fail_process_payment) unless redirect_url
 
         payment.state = :checkout
         payment.save!
