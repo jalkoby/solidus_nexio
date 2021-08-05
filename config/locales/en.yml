@@ -4,11 +4,20 @@ en:
       solidus_nexio/payment_method: Nexio
   nexio:
     errors:
-      default_error: Something bad happened!
+      default_error: Something went wrong
       base:
         card_save_failed: Can't process the credit card
         token_generation_failed: Can't initialize Nexio form
-        blank: is blank
+        blank: Please fill
         invalid: is invalid
         fail_process_payment: There's an error processing the payment
         fail_process_card: There's an error processing the credit card
+        fail_three_d_secure_check: '3D Secure check is failed'
+      number:
+        invalid: Please enter a valid card number
+        blank: Please enter a valid card number
+      name:
+        blank: Please enter your name
+      expiry:
+        invalid: Please enter a valid date
+        blank: Please enter a valid date

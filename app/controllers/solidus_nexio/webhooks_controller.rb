@@ -4,6 +4,7 @@ module SolidusNexio
 
     def create
       Webhook.process(params[:eventType], params[:data])
+      head 204
     end
 
     private

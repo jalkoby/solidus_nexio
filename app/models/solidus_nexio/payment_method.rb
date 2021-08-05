@@ -9,7 +9,8 @@ module SolidusNexio
     preference(:merchant_id, :string, default: nil)
     preference(:auth_token, :string, default: nil)
     preference(:public_key, :string, default: nil)
-    preference(:ui, :boolean, default: 'own_form') # in future add iframe
+    preference(:ui, :string, default: 'own_form') # in future add iframe
+    preference(:three_d_secure, :boolean, default: false)
 
     def process_order_payment(order)
       payment = payments.merge(order.payments).checkout.last
@@ -18,6 +19,7 @@ module SolidusNexio
 
       callback_url = Engine.routes.url_helpers.capture_payment_method_payment_url(self, payment)
       payment.instance_variable_set(:@nexio_callback_url, callback_url)
+
       begin
         payment.process!
         ProcessResult.new(:success, nil)
@@ -27,7 +29,10 @@ module SolidusNexio
 
         payment.state = :checkout
         payment.save!
-        ProcessResult.new(:three_d_secure, redirect_url)
+        ProcessResult.new(:three_d_secure, {
+          redirect_url: redirect_url,
+          check_path: Engine.routes.url_helpers.payment_method_payment_path(self, payment)
+        })
       ensure
         payment.remove_instance_variable(:@nexio_callback_url)
       end
@@ -36,7 +41,7 @@ module SolidusNexio
     def capture_order_payment(payment, id, status)
       return ProcessResult.new(:invalid, nil) unless payment.checkout?
 
-      if id.present? && %w[pending authOnly].include?(status)
+      if success_payment_status?(payment, id, status)
         payment.response_code = id
         auto_capture? ? payment.complete! : payment.pend!
         ProcessResult.new(:success, nil)
@@ -92,6 +97,7 @@ module SolidusNexio
         if payment.instance_variable_get(:@nexio_callback_url)
           result[:three_d_callback_url] = payment.instance_variable_get(:@nexio_callback_url)
           result[:three_d_secure] = true
+          result[:payment_type] = 'initialUnscheduled'
         else
           result[:three_d_secure] = false
         end
@@ -104,6 +110,15 @@ module SolidusNexio
       return unless resp.is_a?(ActiveMerchant::Billing::Response)
 
       resp.params['redirectUrl'] if resp.params['status'] == 'redirect'
+    end
+
+    def success_payment_status?(payment, id, status)
+      return false unless id.present? && %w[pending authOnly].include?(status)
+
+      data = gateway.get_transaction(id)
+      return false unless data
+
+      data.fetch('plugin', {})['orderNumber'] == payment.order.number
     end
   end
 end

@@ -1,6 +1,6 @@
 export const getFields = id => document.querySelector(`[data-nexio-own-form-id="${id}"]`);
 
-const ERROR_MESSAGES = window.nexioErrorMessages || { default_error: 'Something bad happened!' };
+const ERROR_MESSAGES = window.nexioErrorMessages || { default_error: 'Something went wrong' };
 
 const toErrorMessage = (attr, err) =>
   ERROR_MESSAGES[attr] && ERROR_MESSAGES[attr][err] ||

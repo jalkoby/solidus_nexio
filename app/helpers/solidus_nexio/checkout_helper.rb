@@ -14,6 +14,7 @@ module SolidusNexio
 
       config = {
         publicKey: payment_method.preferred_public_key,
+        threeDSecure: payment_method.preferred_three_d_secure,
         paths: {
           oneTimeToken: solidus_nexio.payment_method_one_time_tokens_path(payment_method),
           creditCard: solidus_nexio.payment_method_credit_cards_path(payment_method),

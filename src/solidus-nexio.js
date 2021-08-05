@@ -69,10 +69,27 @@ const setupFields = (id, fields) => {
   );
 }
 
+const unlockForm = id => new Promise(resolve => {
+  let fields = getFields(id);
+  fields.removeAttribute('disabled');
+  let submitButton = fields.closest('form').querySelector(Rails.formEnableSelector);
+  if (submitButton) {
+    setTimeout(() => {
+      // to prevent Spree.disableSaveOnClick
+      submitButton.removeAttribute('disabled');
+      submitButton.classList.remove('disabled');
+      resolve();
+    }, 100);
+  } else {
+    resolve();
+  }
+});
+
 const onCardValidationFail = (id, errors, _card) => {
   Object.entries(errors).forEach(([attr, list]) => {
     list.forEach(item => showError(attr, item, id));
   });
+  return unlockForm(id);
 }
 
 const onCardTokenGenerationFail = (id, _resp) =>
@@ -86,20 +103,9 @@ export const addNexioOwnForm = (id, config) => {
   forms[id] = config;
 }
 
-const unlockForm = (id, showDefaultError = false) => {
-  let fields = getFields(id);
-  fields.removeAttribute('disabled');
-  let submitButton = fields.closest('form').querySelector(Rails.formEnableSelector);
-  if (submitButton) {
-    setTimeout(() => {
-      // to prevent Spree.disableSaveOnClick
-      submitButton.removeAttribute('disabled');
-      submitButton.classList.remove('disabled');
-    }, 100);
-  }
-  if (showDefaultError) {
-    showError('base', 'default_error', id);
-  }
+const resetFormOnError = (id, error = 'default_error') => {
+  showError('base', error, id);
+  return setupFields(id, getFields(id)).then(() => unlockForm(id));
 }
 
 const submitForm = form => {
@@ -113,19 +119,32 @@ const submitForm = form => {
   form.submit();
 }
 
-const onThreeDSecureRedirect = (form, url) => {
-  let redirectWindow = window.open(url, '_blank', 'resizable, width=400, height=600');
-  redirectWindow.onmessage = e => {
-    if (e.data.type === 'three_d_secure_result') {
-      if (e.data.state === 'success') {
-        submitForm(form);
-      } else {
-        console.error(e.data);
-      }
-    }
-  }
+const detectPaymentState = resp => (resp.status !== 200 || resp.json.data.state === 'checkout') ? null : resp.json.data.state;
 
-  redirectWindow.onclose = console.error;
+const checkPaymentState = (path, checkWindow, cb) => {
+  fetch(path).then(detectPaymentState).then(state => {
+    if (state) {
+      cb(state);
+    } else if (checkWindow.closed) {
+      // check the most recent state
+      fetch(path).then(detectPaymentState).then(state => cb(state || 'invalid'));
+    } else {
+      setTimeout(checkPaymentState.bind(null, path, checkWindow, cb), 2000);
+    }
+  });
+}
+
+const onThreeDSecureRedirect = (id, form, urls) => {
+  let checkWindow = window.open(urls.redirect_url, '_blank', 'resizable, width=300, height=400');
+  setTimeout(() => {
+    checkPaymentState(urls.check_path, checkWindow, status => {
+      if (['invalid', 'failed'].includes(status)) {
+        resetFormOnError(id, 'fail_three_d_secure_check');
+      } else {
+        submitForm(form);
+      }
+    });
+  }, 3000);
 }
 
 const submitFormToProcess = (form, id) => {
@@ -138,15 +157,14 @@ const submitFormToProcess = (form, id) => {
         case 'success':
           return submitForm(form);
         case 'three_d_secure':
-          return onThreeDSecureRedirect(form, resp.json.data);
+          return onThreeDSecureRedirect(id, form, resp.json.data);
         case 'error':
-          showError('base', resp.json.data && resp.json.data.error || 'fail_process_payment', id);
-          return unlockForm(id);
+          return resetFormOnError(id, resp.json.data && resp.json.data.error || 'fail_process_payment');
         default:
-          unlockForm(id, true);
+          resetFormOnError(id);
       }
     } else {
-      unlockForm(id, true);
+      resetFormOnError(id);
     }
   });
 }
@@ -157,25 +175,30 @@ const addNewCardFlow = (id, fields, form) => {
 
   let errors = validator(card);
   if (0 < Object.keys(errors).length) {
-    unlockForm(id);
     return onCardValidationFail(id, errors, card);
   }
   fields.setAttribute('disabled', 'disabled');
   tokenizeCreditCard(id, card).then(data => {
     fields.querySelector('[data-hook="card_gateway_payment_profile_id"]').value = data.token;
     fields.removeAttribute('disabled');
-    submitFormToProcess(form, id);
-  }, onCardTokenGenerationFail.bind(null, id, fields)).catch(() => unlockForm(id, true));
+    if (withThreeDSecure(id)) {
+      submitFormToProcess(form, id);
+    } else {
+      form.submit();
+    }
+  }, onCardTokenGenerationFail.bind(null, id, fields)).catch(() => resetFormOnError(id));
 }
 
 const isNexioCardSelected = (form, id) => {
   let walletCardIds = forms[id].walletCardIds;
-  if (Array.isArray(walletCardIds)) return false;
+  if (!Array.isArray(walletCardIds)) return false;
 
   let formData = new FormData(form);
   let currentCard = formData.get('order[wallet_payment_source_id]');
   return currentCard && walletCardIds.includes(parseInt(currentCard))
 }
+
+const withThreeDSecure = id => forms[id].threeDSecure
 
 export const setupNexioOwnForms = () => {
   if (window.onNexioError) {
@@ -192,7 +215,7 @@ export const setupNexioOwnForms = () => {
         if (0 < fields.clientHeight) {
           e.preventDefault();
           addNewCardFlow(id, fields, form);
-        } else if (isNexioCardSelected(form, id)) {
+        } else if (isNexioCardSelected(form, id) && withThreeDSecure(id)) {
           e.preventDefault();
           submitFormToProcess(form, id);
         }
