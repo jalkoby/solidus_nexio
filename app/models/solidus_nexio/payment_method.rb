@@ -17,7 +17,7 @@ module SolidusNexio
       # nothing needed to be done, as other payments cover order
       return ProcessResult.new(:success, :absent) unless payment
 
-      callback_url = Engine.routes.url_helpers.capture_payment_method_payment_url(self, payment)
+      callback_url = Engine.routes.url_helpers.capture_payment_method_payment_state_url(self, payment)
       payment.instance_variable_set(:@nexio_callback_url, callback_url)
 
       begin
@@ -31,7 +31,7 @@ module SolidusNexio
         payment.save!
         ProcessResult.new(:three_d_secure, {
           redirect_url: redirect_url,
-          check_path: Engine.routes.url_helpers.payment_method_payment_path(self, payment)
+          check_path: Engine.routes.url_helpers.payment_method_payment_state_path(self, payment)
         })
       ensure
         payment.remove_instance_variable(:@nexio_callback_url)
