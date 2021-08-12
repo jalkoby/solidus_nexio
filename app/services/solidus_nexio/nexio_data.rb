@@ -11,7 +11,6 @@ module SolidusNexio
         add_order_data(acc, order)
         add_customer_data(acc, order.user || user)
       else
-        acc[:total] = 0
         add_customer_data(acc, user)
       end
 
@@ -32,9 +31,12 @@ module SolidusNexio
 
     def add_order_data(acc, order)
       acc[:currency] = order.currency
-      acc[:customer].merge!(address_to_name(order.billing_address)).merge!(email: order.email)
-      acc[:address] = address_data(order.shipping_address)
-      acc[:billing_address] = address_data(order.billing_address)
+      acc[:customer].merge!(email: order.email)
+      acc[:address] = address_data(order.shipping_address) if order.shipping_address
+      if order.billing_address
+        acc[:customer].merge!(address_to_name(order.billing_address))
+        acc[:billing_address] = address_data(order.billing_address)
+      end
       acc[:order] = { number: order.number }
       acc[:order][:date] = order.completed_at.to_date if order.completed_at
       acc

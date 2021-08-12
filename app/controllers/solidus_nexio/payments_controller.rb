@@ -3,7 +3,9 @@ module SolidusNexio
     def create
       if update_order
         payment_method = PaymentMethod.find(params[:payment_method_id])
-        result = payment_method.process_order_payment(@order)
+        result = payment_method.process_order_payment(@order) do |payment|
+          capture_payment_method_payment_state_url(payment_method, payment)
+        end
         render json: result
       else
         render json: { error: :invalid_order, details: @order.errors.to_h }, status: 422

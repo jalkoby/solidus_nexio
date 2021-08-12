@@ -1,5 +1,3 @@
-export const getFields = id => document.querySelector(`[data-nexio-own-form-id="${id}"]`);
-
 const ERROR_MESSAGES = window.nexioErrorMessages || { default_error: 'Something went wrong' };
 
 const toErrorMessage = (attr, err) =>
@@ -15,14 +13,13 @@ const toErrorLabel = (attr, err) => {
   return node;
 }
 
-export const showError = (attr, err, paymentMethodId) => {
-  let fields = getFields(paymentMethodId);
+export const showError = (fields, attr, err, id) => {
   let label = toErrorLabel(attr, err);
 
   if (attr === 'base') {
-    fields.prepend(label);
+    fields.appendChild(label);
   } else {
-    let input = fields.querySelector(`[name="payment_source[${paymentMethodId}][${attr}]"]`);
+    let input = fields.querySelector(`[name="payment_source[${id}][${attr}]"]`);
     if (input) {
       input.classList.add('error');
       input.parentNode.appendChild(label);
@@ -30,22 +27,21 @@ export const showError = (attr, err, paymentMethodId) => {
   }
 }
 
-export const hideErrors = (paymentMethodId, list = null) => {
-  let fields = getFields(paymentMethodId);
-  let errorNodes;
-  if (list == null) {
-    errorNodes = fields.querySelectorAll(`[data-nexio-error]`);
+export const hideErrors = form => form.querySelectorAll(`[data-nexio-error]`).forEach(node => {
+  let parentNode = node.parentNode;
+  parentNode.removeChild(node);
+  let input = parentNode.querySelector('[name].error');
+  if (input) {
+    input.classList.remove('error');
   }
+});
 
-  errorNodes.forEach(node => {
-    let parentNode = node.parentNode;
-    parentNode.removeChild(node);
-    let input = parentNode.querySelector('[name].error');
-    if (input) {
-      input.classList.remove('error');
-    }
-  });
-}
+export const injectScript = src => new Promise(resolve => {
+  let fraudScripNode = document.createElement('script');
+  fraudScripNode.onload = resolve;
+  fraudScripNode.src = src;
+  document.body.appendChild(fraudScripNode);
+});
 
 const FIELDS = {
   number: 'card_number',
@@ -55,8 +51,12 @@ const FIELDS = {
   verification_value: 'card_code'
 };
 
-export const getCardData = paymentMethodId => {
-  let fields = getFields(paymentMethodId);
+export const setCardValue = (fields, attr, value) => {
+  let selector = FIELDS[attr];
+  fields.querySelector(`[data-hook="${selector}"]`).value = value;
+}
+
+export const getCardData = fields => {
   return Object.entries(FIELDS).reduce((acc, [key, selector]) => {
     let field = fields.querySelector(`[data-hook="${selector}"]`);
     if (field) {

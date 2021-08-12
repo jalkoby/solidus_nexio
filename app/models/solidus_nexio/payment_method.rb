@@ -17,7 +17,7 @@ module SolidusNexio
       # nothing needed to be done, as other payments cover order
       return ProcessResult.new(:success, :absent) unless payment
 
-      callback_url = Engine.routes.url_helpers.capture_payment_method_payment_state_url(self, payment)
+      callback_url = yield payment
       payment.instance_variable_set(:@nexio_callback_url, callback_url)
 
       begin
@@ -89,7 +89,9 @@ module SolidusNexio
     end
 
     def add_transaction_options(options)
-      result = options.slice(:currency, :billing_address, :shipping_address)
+      result = %i(currency billing_address shipping_address).each_with_object({}) do |key, acc|
+        acc[key] = options[key] if options[key].present?
+      end
       if options[:originator].is_a?(::Spree::Payment) && options[:originator].order
         payment = options[:originator]
         result.merge!(SolidusNexio::NexioData.purchase(payment.order))

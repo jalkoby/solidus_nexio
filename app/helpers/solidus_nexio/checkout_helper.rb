@@ -2,17 +2,11 @@
 
 module SolidusNexio
   module CheckoutHelper
-    def setup_nexio_own_form(payment_method, user:, order:)
-      # include js script only once per request
-      unless @__nexio_checkout_script
-        content_for(:head) {
-          javascript_tag("window.nexioErrorMessages = #{I18n.t('nexio.errors').to_json};") +
-          javascript_include_tag('solidus_nexio/checkout.js')
-        }
-        @__nexio_checkout_script = true
-      end
+    def setup_nexio_own_form(payment_method, type: :default, user: nil, order: nil)
+      setup_nexio_checkout
 
       config = {
+        type: type,
         publicKey: payment_method.preferred_public_key,
         threeDSecure: payment_method.preferred_three_d_secure,
         paths: {
@@ -30,6 +24,19 @@ module SolidusNexio
       end
 
       javascript_tag("window.addNexioOwnForm(#{payment_method.id}, #{config.to_json});")
+    end
+
+    def setup_nexio_checkout
+      # include js script only once per request
+      return if @__nexio_checkout_script
+
+      content_for(:head) {
+        javascript_tag("window.nexioErrorMessages = #{I18n.t('nexio.errors').to_json};") +
+        javascript_include_tag('solidus_nexio/checkout.js')
+      }
+      @__nexio_checkout_script = true
+
+      nil
     end
   end
 end
