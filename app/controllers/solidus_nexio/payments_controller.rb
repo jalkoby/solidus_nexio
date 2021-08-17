@@ -17,5 +17,15 @@ module SolidusNexio
     def update_params
       massaged_params.require(:order).permit(permitted_checkout_payment_attributes)
     end
+
+    def current_order_params
+      {
+        currency: current_pricing_options.currency,
+        guest_token: cookies.signed[:guest_token],
+        store_id: current_store.id
+      }.tap do |current_order_params|
+        current_order_params.merge!(user_id: spree_current_user.id) if spree_current_user.present?
+      end
+    end
   end
 end
