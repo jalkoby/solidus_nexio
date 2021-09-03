@@ -33,5 +33,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'solidus_api', '>= 2.0'
   spec.add_dependency 'solidus_core', '>= 2.0'
   spec.add_dependency 'solidus_support', '~> 0.6'
-  spec.add_dependency 'nexio_activemerchant', '>= 0.2.3'
+  spec.add_dependency 'nexio_activemerchant', '>= 0.2.4'
 end
