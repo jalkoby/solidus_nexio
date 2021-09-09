@@ -25,5 +25,9 @@ module SolidusNexio
       ::Spree::PermittedAttributes.source_attributes.push(:encrypted_number)
       SolidusNexio::Engine.routes.default_url_options = app.routes.default_url_options
     end
+
+    unless Rails.env.production?
+      ActiveMerchant::Billing::NexioGateway.logger = Rails.logger
+    end
   end
 end
