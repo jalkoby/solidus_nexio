@@ -27,7 +27,9 @@ module SolidusNexio
     end
 
     unless Rails.env.production?
-      ActiveMerchant::Billing::NexioGateway.logger = Rails.logger
+      initializer 'solidus_nexio.setup_gateway_logger' do
+        ActiveMerchant::Billing::NexioGateway.logger = Rails.logger
+      end
     end
   end
 end
