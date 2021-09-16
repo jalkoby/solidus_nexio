@@ -16,7 +16,7 @@ const responseHandler = resp => {
 }
 
 export default (path, method = 'GET', config = {}) => {
-  var payload = { method, credentials: 'same-origin', headers: new Headers() };
+  var payload = { method, credentials: 'include', headers: new Headers() };
   payload.headers.append('X-CSRF-Token', Rails.csrfToken());
   payload.headers.append('accept', 'application/json');
   if(config.body) {

@@ -1,4 +1,11 @@
 import fetch from './fetch'
+import tingle from 'tingle.js'
+import tingleCss from 'raw-loader!./tingle.css'
+
+let style= document.createElement('style');
+style.setAttribute('type', 'text/css');
+style.innerHTML = tingleCss;
+document.head.appendChild(style);
 
 export const getOneTimeToken = ({ paths, data }) => {
   return fetch(paths.oneTimeToken, 'POST', { body: { data } }).then(resp => {
@@ -31,23 +38,30 @@ export const startPayment = (url, config) => fetch(url, 'POST', config).then(res
 const detectPaymentState = resp =>
   (resp.status !== 200 || resp.json.data.state === 'checkout') ? null : resp.json.data.state;
 
-const checkPaymentState = (path, checkWindow, cb) => {
+const checkPaymentState = (path, modal, cb) => {
   fetch(path).then(detectPaymentState).then(state => {
     if (state) {
       cb(state);
-    } else if (checkWindow.closed) {
+    } else if (!modal.isOpen()) {
       // check the most recent state
       fetch(path).then(detectPaymentState).then(state => cb(state || 'invalid'));
     } else {
-      setTimeout(checkPaymentState.bind(null, path, checkWindow, cb), 2000);
+      setTimeout(checkPaymentState.bind(null, path, modal, cb), 2000);
     }
   });
 }
 
-const THREE_D_SECURE_WINDOW_OPTS = 'left=20,top=20,width=500,height=500,toolbar=0,resizable=0,scrollbars=1'
 export const threeDSecureChallenge = (urls, cb) => {
-  let checkWindow = window.open(urls.redirect_url, '_blank', THREE_D_SECURE_WINDOW_OPTS);
-  setTimeout(() => {
-    checkPaymentState(urls.check_path, checkWindow, cb);
-  }, 3000);
+  let modal = new tingle.modal({
+    closeMethods: ['overlay', 'button', 'escape'],
+    closeLabel: 'Close',
+    onOpen() {
+      setTimeout(() => checkPaymentState(urls.check_path, modal, cb), 3000);
+    },
+    onClose() {
+      modal.$closed = true;
+    }
+  });
+  modal.setContent(`<iframe src="${urls.redirect_url}" class="tingle-modal-box__iframe" />`);
+  modal.open();
 }
