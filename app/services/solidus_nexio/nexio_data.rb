@@ -5,7 +5,7 @@ module SolidusNexio
     extend self
 
     def one_time_token(order:, user:)
-      acc = { customer: {} }
+      acc = build_config
 
       if order
         add_order_data(acc, order)
@@ -20,7 +20,7 @@ module SolidusNexio
     end
 
     def purchase(order)
-      acc = { customer: {} }
+      acc = build_config
       add_order_data(acc, order)
       add_order_cart(acc, order)
       add_customer_data(acc, order)
@@ -28,6 +28,10 @@ module SolidusNexio
     end
 
     private
+
+    def build_config
+      { customer: {}, currency: Spree::Config.currency }
+    end
 
     def add_order_data(acc, order)
       acc[:currency] = order.currency
