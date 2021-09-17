@@ -4,7 +4,7 @@ module SolidusNexio
       if update_order
         payment_method = PaymentMethod.find(params[:payment_method_id])
         result = payment_method.process_order_payment(@order) do |payment|
-          capture_payment_method_payment_state_url(payment_method, payment)
+          capture_payment_method_payment_state_url(payment_method, payment.number)
         end
         render json: result
       else

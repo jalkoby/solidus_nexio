@@ -41,7 +41,7 @@ module SolidusNexio
     def capture_order_payment(payment, id, status)
       return ProcessResult.new(:invalid, nil) unless payment.checkout?
 
-      if success_payment_status?(payment, id, status)
+      if id.present? && %w[pending authOnly].include?(status)
         payment.response_code = id
         auto_capture? ? payment.complete! : payment.pend!
         ProcessResult.new(:success, nil)
@@ -112,15 +112,6 @@ module SolidusNexio
       return unless resp.is_a?(ActiveMerchant::Billing::Response)
 
       resp.params['redirectUrl'] if resp.params['status'] == 'redirect'
-    end
-
-    def success_payment_status?(payment, id, status)
-      return false unless id.present? && %w[pending authOnly].include?(status)
-
-      data = gateway.get_transaction(id)
-      return false unless data
-
-      data.fetch('plugin', {})['orderNumber'] == payment.order.number
     end
   end
 end
