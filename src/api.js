@@ -41,6 +41,9 @@ const detectPaymentState = resp =>
 const checkPaymentState = (path, modal, cb) => {
   fetch(path).then(detectPaymentState).then(state => {
     if (state) {
+      if (modal.isOpen()) {
+        modal.close();
+      }
       cb(state);
     } else if (!modal.isOpen()) {
       // check the most recent state
