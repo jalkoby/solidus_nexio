@@ -142,7 +142,7 @@ export default class {
   }
 
   submitForm() {
-    this.form.querySelectorAll('fieldset#payment, fieldset[data-hook="payment"]')
+    this.form.querySelectorAll('fieldset#payment, fieldset[data-hook="payment"], [data-nexio-3ds-disable]')
       .forEach(node => node.setAttribute('disabled', 'disabled'));
     let nodePlaceholder = document.createElement('input');
     nodePlaceholder.setAttribute('type', 'hidden');

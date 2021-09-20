@@ -1,4 +1,4 @@
-<fieldset class="nexio-own-form" data-hook="nexio_own_form" data-nexio-own-form-id="<%= payment_method.id %>">
+<fieldset class="nexio-own-form" data-hook="nexio_own_form" data-nexio-3ds-disable data-nexio-own-form-id="<%= payment_method.id %>">
   <%= render 'spree/checkout/payment/gateway', payment_method: payment_method %>
   <input name="payment_source[<%= payment_method.id %>][gateway_payment_profile_id]" type="hidden" data-hook="card_gateway_payment_profile_id" />
   <input name="payment_source[<%= payment_method.id %>][cc_type]" type="hidden" data-hook="card_type" class="ccType" />
