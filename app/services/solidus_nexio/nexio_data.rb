@@ -75,7 +75,7 @@ module SolidusNexio
       {
         id: line_item.id,
         description: line_item.product.name,
-        price: line_item.price,
+        price: line_item.price.to_money.cents,
         quantity: line_item.quantity
       }
     end

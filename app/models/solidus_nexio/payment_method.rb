@@ -82,6 +82,17 @@ module SolidusNexio
       gateway.store(card, options.except(:card, :one_time_token))
     end
 
+    def cancel(id)
+      transaction = gateway.get_transaction(id)
+      return unless transaction
+
+      if transaction['transactionStatus'] == 20
+        credit(transaction['amount'].to_money.cents, id)
+      else
+        void(id)
+      end
+    end
+
     protected
 
     def gateway_class
@@ -89,9 +100,10 @@ module SolidusNexio
     end
 
     def add_transaction_options(options)
-      result = %i(currency billing_address shipping_address).each_with_object({}) do |key, acc|
+      result = %i(currency billing_address).each_with_object({}) do |key, acc|
         acc[key] = options[key] if options[key].present?
       end
+      result[:address] = options[:shipping_address] if options[:shipping_address].present?
       if options[:originator].is_a?(::Spree::Payment) && options[:originator].order
         payment = options[:originator]
         result.merge!(SolidusNexio::NexioData.purchase(payment.order))
