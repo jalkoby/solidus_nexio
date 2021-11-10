@@ -26,14 +26,26 @@ module SolidusNexio
       javascript_tag("window.addNexioOwnForm(#{payment_method.id}, #{config.to_json});")
     end
 
+    def setup_nexio_apm(payment_method, order, user: nil)
+      setup_nexio_checkout
+
+      config = {
+        data: NexioData.one_time_token(user: user, order: order),
+        paths: {
+          oneTimeToken: solidus_nexio.payment_method_one_time_tokens_path(payment_method)
+        }
+      }
+      javascript_tag("window.addNexioAPM(#{payment_method.id}, #{config.to_json});")
+    end
+
     def setup_nexio_checkout
       # include js script only once per request
       return if @__nexio_checkout_script
 
-      content_for(:head) {
+      content_for(:head) do
         javascript_tag("window.nexioErrorMessages = #{I18n.t('nexio.errors').to_json};") +
-        javascript_include_tag('solidus_nexio/checkout.js')
-      }
+          javascript_include_tag('solidus_nexio/checkout.js')
+      end
       @__nexio_checkout_script = true
 
       nil

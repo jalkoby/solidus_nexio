@@ -13,3 +13,7 @@ Gemspec/RequiredRubyVersion:
   Enabled: false
 Metrics/MethodLength:
   Max: 30
+Style/ModuleFunction:
+  Enabled: false
+Style/Documentation:
+  Enabled: false

@@ -4,7 +4,6 @@ module SolidusNexio
   class CreditCardsController < BasePaymentController
     def create
       token = payment_method.store(credit_card_params)
-
       if token
         render json: { data: { token: token } }, status: 201
       else

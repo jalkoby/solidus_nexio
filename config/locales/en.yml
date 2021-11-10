@@ -2,7 +2,11 @@ en:
   activerecord:
     models:
       solidus_nexio/payment_method: Nexio
+      solidus_nexio/alternative_payment_method: Nexio APM
   nexio:
+    apms:
+      braintree_pay_pal:
+        name: PayPal
     errors:
       default_error: Something went wrong
       base:

@@ -2,9 +2,10 @@
 
 module SolidusNexio
   class PaymentMethod < SolidusSupport.payment_method_parent_class(credit_card: true)
+    include NexioPaymentCommons
+
     ProcessResult = Struct.new(:state, :data)
 
-    # Preferences for configuration of Braintree credentials
     preference(:server, :string, default: 'test')
     preference(:merchant_id, :string, default: nil)
     preference(:auth_token, :string, default: nil)
@@ -23,16 +24,16 @@ module SolidusNexio
       begin
         payment.process!
         ProcessResult.new(:success, nil)
-      rescue Spree::Core::GatewayError => error
+      rescue Spree::Core::GatewayError
         redirect_url = nexio_three_d_secure_redirect_url(payment)
         return ProcessResult.new(:error, error: :fail_process_payment) unless redirect_url
 
         payment.state = :checkout
         payment.save!
         ProcessResult.new(:three_d_secure, {
-          redirect_url: redirect_url,
-          check_path: Engine.routes.url_helpers.payment_method_payment_state_path(self, payment)
-        })
+                            redirect_url: redirect_url,
+                            check_path: Engine.routes.url_helpers.payment_method_payment_state_path(self, payment)
+                          })
       ensure
         payment.remove_instance_variable(:@nexio_callback_url)
       end
@@ -60,14 +61,6 @@ module SolidusNexio
       gateway.generate_token(options)
     end
 
-    def purchase(money, payment, options = {})
-      super(money, payment, add_transaction_options(options))
-    end
-
-    def authorize(money, payment, options = {})
-      super(money, payment, add_transaction_options(options))
-    end
-
     def store(options)
       card_attrs = options[:card]
                    .slice(:encrypted_number, :number, :name, :month, :year)
@@ -82,31 +75,16 @@ module SolidusNexio
       gateway.store(card, options.except(:card, :one_time_token))
     end
 
-    def cancel(id)
-      transaction = gateway.get_transaction(id)
-      return unless transaction
-
-      if transaction['transactionStatus'] == 20
-        credit(transaction['amount'].to_money.cents, id)
-      else
-        void(id)
-      end
-    end
-
-    protected
+    private
 
     def gateway_class
       ActiveMerchant::Billing::NexioGateway
     end
 
     def add_transaction_options(options)
-      result = %i(currency billing_address).each_with_object({}) do |key, acc|
-        acc[key] = options[key] if options[key].present?
-      end
-      result[:address] = options[:shipping_address] if options[:shipping_address].present?
-      if options[:originator].is_a?(::Spree::Payment) && options[:originator].order
+      result = super
+      if options[:originator].is_a?(::Spree::Payment)
         payment = options[:originator]
-        result.merge!(SolidusNexio::NexioData.purchase(payment.order))
         # called from customer checkout page
         if payment.instance_variable_get(:@nexio_callback_url)
           result[:three_d_callback_url] = payment.instance_variable_get(:@nexio_callback_url)

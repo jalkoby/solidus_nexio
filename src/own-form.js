@@ -1,6 +1,7 @@
 import JSEncrypt from 'jsencrypt'
 import Rails from './rails'
-import { getOneTimeToken, threeDSecureChallenge, tokenizeCreditCard, startPayment } from './api'
+import { getOneTimeToken, tokenizeCreditCard, startPayment } from './api'
+import threeDChallenge from './three-d-challenge'
 import { validator, cardExpiryVal } from './card'
 import { getCardData, setCardValue, showError, hideErrors, injectScript } from './dom'
 
@@ -40,14 +41,14 @@ export default class {
       fields.nexioOwnForm = this;
     }
     this.refreshToken().then(() => {
-      this.form.addEventListener('submit', e => {
+      form.addEventListener('submit', e => {
         // check if a new card fields visible
-        if (this.withNewCardForm() && 0 < this.fields.clientHeight) {
-          hideErrors(this.form);
+        if (this.withNewCardForm() && 0 < fields.clientHeight) {
+          hideErrors(form);
           e.preventDefault();
           this.addNewCardFlow();
         } else if (this.config.threeDSecure && this.isNexioCardSelected()) {
-          hideErrors(this.form);
+          hideErrors(form);
           e.preventDefault();
           this.submitFormToProcess();
         }
@@ -88,7 +89,7 @@ export default class {
     // mark that next time token should be added
     this.token = null;
     return tokenizeCreditCard(this.config, params).then(data => {
-      this.fields.querySelector('[data-hook="card_gateway_payment_profile_id"]').value = data.token;
+      setCardValue(this.fields, 'card_gateway_payment_profile_id', data.token);
       this.fields.removeAttribute('disabled');
       if (!this.config.threeDSecure || this.config.type === 'addWalletCard') {
         if (this.config.type === 'addWalletCard') {
@@ -132,7 +133,7 @@ export default class {
   }
 
   onThreeDSecureRedirect(urls) {
-    threeDSecureChallenge(urls, status => {
+    threeDChallenge(urls, status => {
       if (['invalid', 'failed'].includes(status)) {
         this.resetFormOnError('fail_three_d_secure_check');
       } else {

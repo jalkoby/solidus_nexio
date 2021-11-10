@@ -9,7 +9,7 @@ module SolidusNexio
     private
 
     def payment_method
-      @payment_method ||= PaymentMethod.find(params[:payment_method_id])
+      @payment_method ||= ::Spree::PaymentMethod.active.available_to_users.find(params[:payment_method_id])
     end
   end
 end

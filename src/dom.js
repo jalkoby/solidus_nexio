@@ -1,9 +1,15 @@
 const ERROR_MESSAGES = window.nexioErrorMessages || { default_error: 'Something went wrong' };
 
-const toErrorMessage = (attr, err) =>
-  ERROR_MESSAGES[attr] && ERROR_MESSAGES[attr][err] ||
-  ERROR_MESSAGES.base && ERROR_MESSAGES.base[err] ||
-  ERROR_MESSAGES.default_error;
+const toErrorMessage = (attr, err) => {
+  // handle case when translated error is set
+  if (err && err.includes(' ')) {
+    return err;
+  }
+
+  return ERROR_MESSAGES[attr] && ERROR_MESSAGES[attr][err] ||
+          ERROR_MESSAGES.base && ERROR_MESSAGES.base[err] ||
+          ERROR_MESSAGES.default_error;
+}
 
 const toErrorLabel = (attr, err) => {
   let node = document.createElement('label');
@@ -52,8 +58,14 @@ const FIELDS = {
 };
 
 export const setCardValue = (fields, attr, value) => {
-  let selector = FIELDS[attr];
-  fields.querySelector(`[data-hook="${selector}"]`).value = value;
+  let selector = FIELDS[attr] || attr;
+  let node = fields.querySelector(`[data-hook="${selector}"]`);
+  if (node) {
+    node.value = value;
+    return true
+  } else {
+    return false;
+  }
 }
 
 export const getCardData = fields => {

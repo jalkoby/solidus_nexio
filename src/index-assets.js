@@ -1,6 +1,7 @@
-import { addNexioOwnForm, setupNexioOwnForms } from './solidus-nexio'
+import { addNexioAPM, addNexioOwnForm, setupNexio } from './solidus-nexio'
 
 window.addNexioOwnForm = addNexioOwnForm;
-window.setupNexioOwnForms = setupNexioOwnForms;
+window.addNexioAPM = addNexioAPM;
+window.setupNexio = setupNexio;
 
-window.jQuery(function() { setupNexioOwnForms(); });
+window.jQuery(function() { setupNexio(); });

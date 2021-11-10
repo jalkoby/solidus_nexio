@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-attrs = [:id, :month, :year, :cc_type, :last_digits, :name]
-if @current_user_roles.include?("admin")
-  attrs += [:gateway_customer_profile_id, :gateway_payment_profile_id]
-end
+attrs = %i[id month year cc_type last_digits name]
+attrs += %i[gateway_customer_profile_id gateway_payment_profile_id] if @current_user_roles.include?('admin')
 
-json.(payment_source, *attrs)
+json.call(payment_source, *attrs)

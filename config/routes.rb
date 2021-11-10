@@ -9,6 +9,9 @@ SolidusNexio::Engine.routes.draw do
         get :capture
       end
     end
+    resources :alternative_payments, only: [] do
+      get :state, :capture, on: :member
+    end
   end
   resources :webhooks, only: :create
 end
