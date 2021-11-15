@@ -29,7 +29,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'nexio_activemerchant', '>= 0.4'
+  spec.add_dependency 'nexio_activemerchant', '>= 0.4.1'
   spec.add_dependency 'rails'
   spec.add_dependency 'solidus_api', '>= 2.0'
   spec.add_dependency 'solidus_core', '>= 2.0'

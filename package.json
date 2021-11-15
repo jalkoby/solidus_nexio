@@ -1,6 +1,6 @@
 {
   "name": "solidus_nexio",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Solidus integration with Nexio",
   "main": "dist/bundle.js",
   "scripts": {
