@@ -1,1 +1,19 @@
-<%= render partial: 'spree/checkout/existing_payment/gateway', locals: local_assigns %>
+<% row_class = cycle('even', 'odd') %>
+<tr id="<%= dom_id(wallet_payment_source, 'spree')%>" class="<%= row_class %>">
+  <td><%= wallet_payment_source.payment_source.name %></td>
+  <td>
+    <%= wallet_payment_source.payment_source.display_number %>
+  </td>
+  <td><%= wallet_payment_source.payment_source.month %></td>
+  <td><%= wallet_payment_source.payment_source.year %></td>
+  <td>
+    <%= radio_button_tag "order[wallet_payment_source_id]", wallet_payment_source.id, default, class: "existing-cc-radio" %>
+  </td>
+</tr>
+<tr id="<%= dom_id(wallet_payment_source, 'spree')%>_cvc_confirm" class="<%= row_class %>" data-hook="nexio_cvc_confirm_row">
+  <td><%= t('spree.card_code') %></td>
+  <td>
+    <input type="password" id="nexio_cvc_confirm_<%= wallet_payment_source.id %>" />
+  </td>
+  <td colspan="3" />
+</tr>

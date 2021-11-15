@@ -19,13 +19,12 @@ const toErrorLabel = (attr, err) => {
   return node;
 }
 
-export const showError = (fields, attr, err, id) => {
+export const showError = (fields, attr, err, input) => {
   let label = toErrorLabel(attr, err);
 
   if (attr === 'base') {
     fields.appendChild(label);
   } else {
-    let input = fields.querySelector(`[name="payment_source[${id}][${attr}]"]`);
     if (input) {
       input.classList.add('error');
       input.parentNode.appendChild(label);

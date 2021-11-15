@@ -2,7 +2,7 @@ import JSEncrypt from 'jsencrypt'
 import Rails from './rails'
 import { getOneTimeToken, tokenizeCreditCard, startPayment } from './api'
 import threeDChallenge from './three-d-challenge'
-import { validator, cardExpiryVal } from './card'
+import { validator, validateCVC, cardExpiryVal } from './card'
 import { getCardData, setCardValue, showError, hideErrors, injectScript } from './dom'
 
 const maskCardNumber = number => {
@@ -47,10 +47,26 @@ export default class {
           hideErrors(form);
           e.preventDefault();
           this.addNewCardFlow();
-        } else if (this.config.threeDSecure && this.isNexioCardSelected()) {
+        } else if (this.isNexioCardSelected()) {
           hideErrors(form);
-          e.preventDefault();
-          this.submitFormToProcess();
+
+          let input = document.getElementById(`nexio_cvc_confirm_${this.currentSourceId()}`) || document.getElementById('nexio_cvc_confirm');
+          if (input) {
+            let errors = validateCVC(input.value);
+            if (0 < Object.keys(errors).length) {
+              Object.entries(errors).forEach(([key, list]) => showError(input.parentNode, key, list[0], input));
+              e.preventDefault();
+              this.unlockForm();
+              return;
+            } else {
+              input.setAttribute('name', 'cvc_confirm');
+            }
+          }
+
+          if (this.config.threeDSecure) {
+            e.preventDefault();
+            this.submitFormToProcess();
+          }
         }
       });
     })
@@ -62,7 +78,11 @@ export default class {
 
   showError(attr, err) {
     let container = (attr === 'base') ? this.baseErrorContainer : this.fields || this.baseErrorContainer;
-    showError(container, attr, err, this.id);
+    let input;
+    if (this.id) {
+      input = container.querySelector(`[name="payment_source[${id}][${attr}]"]`);
+    }
+    showError(container, attr, err, input);
   }
 
   refreshToken() {
@@ -122,14 +142,17 @@ export default class {
   }
 
   isNexioCardSelected() {
-    if (!this.config.threeDSecure) return false;
-
     let walletCardIds = this.config.walletCardIds;
     if (!Array.isArray(walletCardIds)) return false;
 
+    let id = this.currentSourceId();
+    return (id === null) ? false : walletCardIds.includes(id)
+  }
+
+  currentSourceId() {
     let formData = new FormData(this.form);
-    let currentCard = formData.get('order[wallet_payment_source_id]');
-    return currentCard && walletCardIds.includes(parseInt(currentCard))
+    let value = formData.get('order[wallet_payment_source_id]');
+    return value ? parseInt(value) : null;
   }
 
   onThreeDSecureRedirect(urls) {

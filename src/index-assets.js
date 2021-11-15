@@ -4,4 +4,16 @@ window.addNexioOwnForm = addNexioOwnForm;
 window.addNexioAPM = addNexioAPM;
 window.setupNexio = setupNexio;
 
-window.jQuery(function() { setupNexio(); });
+Spree.ready(function($) {
+  setupNexio();
+
+  let showExistingCardCvv = () => {
+    $('[data-hook="nexio_cvc_confirm_row"]').hide();
+    let id = $('.existing-cc-radio:checked').val();
+    if (id) {
+      $(`#spree_wallet_payment_source_${id}_cvc_confirm`).show();
+    }
+  }
+  showExistingCardCvv();
+  $('#existing_cards').on('change', '.existing-cc-radio', showExistingCardCvv);
+});

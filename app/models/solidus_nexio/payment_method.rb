@@ -6,7 +6,6 @@ module SolidusNexio
 
     ProcessResult = Struct.new(:state, :data)
 
-    preference(:server, :string, default: 'test')
     preference(:merchant_id, :string, default: nil)
     preference(:auth_token, :string, default: nil)
     preference(:public_key, :string, default: nil)
@@ -81,19 +80,31 @@ module SolidusNexio
       ActiveMerchant::Billing::NexioGateway
     end
 
-    def add_transaction_options(options)
+    def add_transaction_options(source, options)
       result = super
-      if options[:originator].is_a?(::Spree::Payment)
-        payment = options[:originator]
-        # called from customer checkout page
-        if payment.instance_variable_get(:@nexio_callback_url)
-          result[:three_d_callback_url] = payment.instance_variable_get(:@nexio_callback_url)
-          result[:three_d_secure] = true
+      return result unless options[:originator].is_a?(::Spree::Payment)
+
+      payment = options[:originator]
+      # called from customer checkout page
+      if payment.instance_variable_get(:@nexio_callback_url)
+        result[:three_d_callback_url] = payment.instance_variable_get(:@nexio_callback_url)
+        result[:three_d_secure] = true
+      else
+        result[:three_d_secure] = false
+      end
+
+      if source.is_a?(Spree::CreditCard)
+        if nexio_cvv = source.nexio_cvv
           result[:payment_type] = 'initialUnscheduled'
+          result[:card] ||= {}
+          result[:card][:cvv] = nexio_cvv
+        elsif payment.order.created_by && payment.order.created_by.admin?
+          result[:payment_type] = 'unscheduledMit'
         else
-          result[:three_d_secure] = false
+          result[:payment_type] = 'unscheduledCit'
         end
       end
+
       result
     end
 

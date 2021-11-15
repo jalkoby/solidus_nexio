@@ -2,12 +2,12 @@
 
 module SolidusNexio
   module NexioPaymentCommons
-    def purchase(money, payment, options = {})
-      super(money, payment, add_transaction_options(options))
+    def purchase(money, source, options = {})
+      super(money, source, add_transaction_options(source, options))
     end
 
-    def authorize(money, payment, options = {})
-      super(money, payment, add_transaction_options(options))
+    def authorize(money, source, options = {})
+      super(money, source, add_transaction_options(source, options))
     end
 
     def cancel(id)
@@ -23,7 +23,7 @@ module SolidusNexio
 
     private
 
-    def add_transaction_options(options)
+    def add_transaction_options(source, options)
       result = %i[currency billing_address].each_with_object({}) do |key, acc|
         acc[key] = options[key] if options[key].present?
       end

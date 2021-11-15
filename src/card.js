@@ -24,16 +24,26 @@ const addError = (errors, key, reason) => {
   errors[key].push(reason);
 }
 
-export const validator = card => {
+export const validateCVC = (cvc, ccType) => {
   let errors = {};
-  ['number', 'name', 'expiry', 'verification_value'].forEach(key =>
+  if (isPresent(cvc)) {
+    if (!validateCardCVC(cvc, ccType)) {
+      addError(errors, 'verification_value', 'invalid');
+    }
+  } else {
+    addError(errors, 'verification_value', 'blank');
+  }
+  return errors;
+}
+
+export const validator = card => {
+  let errors = validateCVC(card.verification_value, card.cc_type);
+  ['number', 'name', 'expiry'].forEach(key =>
     isPresent(card[key]) ? null : addError(errors, key, 'blank')
   );
+
   if (isPresent(card.number) && !validateCardNumber(card.number)) {
     addError(errors, 'number', 'invalid')
-  }
-  if (isPresent(card.verification_value) && !validateCardCVC(card.verification_value, card.cc_type)) {
-    addError(errors, 'verification_value', 'invalid');
   }
 
   if (isPresent(card.expiry) && !validateCardExpiry(card.month, card.year)) {
