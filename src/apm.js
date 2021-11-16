@@ -16,6 +16,7 @@ export default class {
   }
 
   setup(form, fields) {
+    fields.classList.add('solidus-nexio-apm');
     getOneTimeToken(this.config).then(data => {
       let iframe = document.createElement('iframe');
       window.addEventListener('message', e => {
@@ -23,6 +24,9 @@ export default class {
         let data = e.data
         if (data && typeof data === 'object') {
           switch (data.event) {
+            case 'loaded':
+              fields.classList.add('solidus-nexio-apm--loaded');
+              break;
             case 'success':
               submitForm(form, fields, data.data);
               break;

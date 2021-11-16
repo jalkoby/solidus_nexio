@@ -18,10 +18,16 @@ module SolidusNexio
       ActiveSupport::MessageEncryptor.new(key)
     end
 
+
+    NEXIO_SECRET = Rails.application.secrets.nexio_secret_key ||
+                    ENV['NEXIO_SECRET_KEY'] ||
+                    Rails.application.secrets.secret_key_base ||
+                    ENV['SECRET_KEY_BASE']
+
+    raise ArgumentError, 'Please setup nexio secret key. Rails.application.secrets.nexio_secret_key or ENV["NEXIO_SECRET_KEY"]' if NEXIO_SECRET.blank?
+
     def key
-      ActiveSupport::KeyGenerator.new(
-        Rails.application.secrets.secret_key_base
-      ).generate_key(salt, ActiveSupport::MessageEncryptor.key_len)
+      ActiveSupport::KeyGenerator.new(NEXIO_SECRET).generate_key(salt, ActiveSupport::MessageEncryptor.key_len)
     end
   end
 end
