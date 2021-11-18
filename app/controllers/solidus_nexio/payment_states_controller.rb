@@ -8,7 +8,8 @@ module SolidusNexio
     end
 
     def capture
-      payment = payments_scope.find_by(number: params[:payment_id])
+      # TODO: figure out how get current order as capture runs in iframe which doesn't have cookie session
+      payment = payment_method.payments.find_by(number: params[:payment_id])
       if payment
         @result = payment_method.capture_order_payment(payment, params[:id], params[:status])
         render :capture, layout: false
