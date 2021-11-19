@@ -80,7 +80,7 @@ export default class {
     let container = (attr === 'base') ? this.baseErrorContainer : this.fields || this.baseErrorContainer;
     let input;
     if (this.id) {
-      input = container.querySelector(`[name="payment_source[${id}][${attr}]"]`);
+      input = container.querySelector(`[name="payment_source[${this.id}][${attr}]"]`);
     }
     showError(container, attr, err, input);
   }
