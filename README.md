@@ -24,11 +24,24 @@ Or install it yourself as:
 
 TODO: Write usage instructions here
 
-## Development
+## Frontend Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+1. Set the `development` mode for the webpacker in line #22 of `webpack.config.js`
+```
+mode: 'development',
+```
+2. Add the gem as a local one in your app `Gemfile`
+```
+gem 'solidus_nexio', path: '~/apps/solidus_gems/solidus_nexio'
+```
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+2. Uncomment the line #45 in `app/helpers/solidus_nexio/checkout_helper.rb`
+```
+`cd #{::SolidusNexio.gem_dir}; yarn webpack --config webpack.config.js` if Rails.env.development?
+```
+
+3. Reload the page you're debugging after any change in a js-file. 
+4. *Nota Bene* -> Revert all changes above after your development is completed.
 
 ## Contributing
 

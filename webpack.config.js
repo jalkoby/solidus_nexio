@@ -19,6 +19,7 @@ if (process.env.NPM_PACKAGE) {
 const config = {
   entry: entry,
   output: output,
+  mode: 'production',
   module: {
     rules: [
       {

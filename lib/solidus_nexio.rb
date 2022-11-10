@@ -17,4 +17,8 @@ module SolidusNexio
     yield @config if block_given?
     @config
   end
+
+  def self.gem_dir
+    File.dirname __dir__
+  end
 end
