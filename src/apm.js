@@ -3,6 +3,14 @@ import { hideErrors, setCardValue, showError } from './dom'
 
 const nexioApmIFrameClass = 'solidus-nexio-apm-iframe';
 
+const submitForm = (form, fields, data) => {
+  setCardValue(fields, 'nexio_apm_transaction_id', data.id);
+  if (data.apm) {
+    setCardValue(fields, 'gateway_payment_profile_id', data.apm.token);
+  }
+  form.submit();
+}
+
 const fetchValidEvent = (data) => {
   switch (typeof data) {
     case 'object':
@@ -27,7 +35,7 @@ const stretchIFrame = () => {
   iframe.css('width', '100%');
   iframe.css('top', '0');
   iframe.css('left', '0');
-  iframe.css('z-index', '100');
+  iframe.css('z-index', '1001');
 }
 
 const restoreIFrameSize = () => {
