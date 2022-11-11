@@ -42,6 +42,7 @@ module SolidusNexio
       # include js script only once per request
       return if @__nexio_checkout_script
 
+      # `cd #{::SolidusNexio.gem_dir}; yarn webpack --config webpack.config.js` if Rails.env.development?
       content_for(:head) do
         javascript_tag("window.nexioErrorMessages = #{I18n.t('nexio.errors').to_json};") +
           javascript_include_tag('solidus_nexio/checkout.js')
