@@ -40,9 +40,25 @@ gem 'solidus_nexio', path: '~/apps/solidus_gems/solidus_nexio'
 `cd #{::SolidusNexio.gem_dir}; yarn webpack --config webpack.config.js` if Rails.env.development?
 ```
 
-3. Reload the page you're debugging after any change in a js-file. 
-4. *Nota Bene* -> Revert all changes above after your development is completed.
-
+3. Reload the page you're debugging after any change in a js-file.
+4. *Nota Bene*
+    1. Revert all changes above after your development is completed.
+    2. Bump version in the following files:
+        1. `lib/solidus_nexio/version.rb`
+        2. `package.json`
+    3. Delete the precompiled asserts in the `app/assets/javascripts/` folder
+    4. Precompile asserts for production:
+        1. `yarn webpack --config webpack.config.js`
+    5. Push your update to RubyGems: (Ref: https://guides.rubygems.org/publishing/)
+        1. Build Gem
+        ```
+        gem build solidus_nexio
+        ```
+        2. Push Gem
+        ```
+        gem push solidus_nexio-0.6.9.gem
+        ```
+    6. Update the gem in your app
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/solidus_nexio.
