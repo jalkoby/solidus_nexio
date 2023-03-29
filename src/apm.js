@@ -56,11 +56,12 @@ export default class {
 
   setup(form, fields) {
     fields.classList.add('solidus-nexio-apm');
+    const payment_slug = fields.dataset.nexioPaymentMethod;
     getOneTimeToken(this.config).then(data => {
       let iframe = document.createElement('iframe');
       window.addEventListener('message', e => {
         if (iframe.contentWindow !== e.source) return;
-        let data = e.data
+        let data = e.data;
         let iframe_event = fetchValidEvent(data);
         switch (iframe_event) {
           case 'loaded':

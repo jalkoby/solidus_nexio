@@ -1,4 +1,5 @@
 import APM from './apm'
+import CustomerRedirect from './customer-redirect'
 import OwnForm from './own-form'
 
 let payments = [];
@@ -6,6 +7,8 @@ let payments = [];
 export const addNexioOwnForm = (id, config) => payments.push([`[data-nexio-own-form-id="${id}"]`, new OwnForm(id, config)]);
 
 export const addNexioAPM = (id, config) => payments.push([`[data-nexio-apm="${id}"]`, new APM(id, config)]);
+
+export const addNexioCustomerRedirect = (id, config) => payments.push([`[data-nexio-customer-redirect="${id}"]`, new CustomerRedirect(id, config)]);
 
 export const setupNexio = () => {
   payments.forEach(([selector, payment]) => {

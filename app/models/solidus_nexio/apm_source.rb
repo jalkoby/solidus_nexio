@@ -6,7 +6,10 @@ module SolidusNexio
 
     belongs_to :user, class_name: Spree::UserClassHandle.new, foreign_key: 'user_id', optional: true
 
-    enum kind: { braintree_pay_pal: 0 }
+    enum kind: {
+      braintree_pay_pal: 0,
+      pay_pal: 1
+    }
 
     def reusable?
       gateway_payment_profile_id.present?

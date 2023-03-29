@@ -1,5 +1,12 @@
-<fieldset data-nexio-apm="<%= payment_method.id %>" data-hook="nexio_apm">
-  <input name="order[payments_attributes][][nexio_apm_transaction_id]" type="hidden" data-hook="nexio_apm_transaction_id" />
-  <input name="payment_source[<%= payment_method.id %>][gateway_payment_profile_id]" type="hidden" data-hook="gateway_payment_profile_id" />
-</fieldset>
-<%= setup_nexio_apm(payment_method, current_order, user: current_spree_user) %>
+<% if payment_method.preferred_customer_redirect %>
+  <%= link_to '#', class: :hidden, data: { 'nexio-customer-redirect': payment_method.id, 'nexio-payment-method': payment_method.preferred_payment_method } do %>
+    <%= yield.presence || payment_method.name %>
+  <% end %>
+  <%= setup_custom_redirect(payment_method, current_order, user: current_spree_user) %>
+<% else %>
+  <fieldset data-nexio-apm="<%= payment_method.id %>" data-hook="nexio_apm" data-nexio-payment-method="<%= payment_method.preferred_payment_method %>">
+    <input name="order[payments_attributes][][nexio_apm_transaction_id]" type="hidden" data-hook="nexio_apm_transaction_id" />
+    <input name="payment_source[<%= payment_method.id %>][gateway_payment_profile_id]" type="hidden" data-hook="gateway_payment_profile_id" />
+  </fieldset>
+  <%= setup_nexio_apm(payment_method, current_order, user: current_spree_user) %>
+<% end %>

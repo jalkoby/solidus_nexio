@@ -35,7 +35,7 @@ mode: 'development',
 gem 'solidus_nexio', path: '~/apps/solidus_gems/solidus_nexio'
 ```
 
-2. Uncomment the line #45 in `app/helpers/solidus_nexio/checkout_helper.rb`
+2. Uncomment the line #52 in `app/helpers/solidus_nexio/checkout_helper.rb`
 ```
 `cd #{::SolidusNexio.gem_dir}; yarn webpack --config webpack.config.js` if Rails.env.development?
 ```

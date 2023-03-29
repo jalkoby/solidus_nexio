@@ -28,6 +28,11 @@ module SolidusNexio
       ::Spree::PermittedAttributes.checkout_payment_attributes.each do |item|
         next unless item.is_a?(Hash) && item.key?(:payments_attributes)
 
+        item[:payments_attributes].each do |sub_item|
+          next unless sub_item.is_a?(Hash) && sub_item.key?(:source_attributes)
+
+          sub_item[:source_attributes].push(:kind)
+        end
         item[:payments_attributes].push(:nexio_apm_transaction_id)
       end
 

@@ -47,7 +47,7 @@ module SolidusNexio
         invalidate!
       end
 
-      raise Core::GatewayError, I18n.t('spree.payment_processing_failed')
+      raise Spree::Core::GatewayError, I18n.t('spree.payment_processing_failed')
     end
 
     Spree::Payment.include self

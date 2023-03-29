@@ -9,6 +9,7 @@ module SolidusNexio
     preference(:auth_token, :string, default: nil)
     preference(:payment_method, :string, default: nil)
     preference(:save_token, :boolean, default: false)
+    preference(:customer_redirect, :boolean, default: false)
 
     def partial_name
       'nexio_apm'

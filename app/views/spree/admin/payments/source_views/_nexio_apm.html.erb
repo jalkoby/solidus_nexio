@@ -1,0 +1,9 @@
+<fieldset data-hook="credit_card">
+  <legend align="center"><%= payment.payment_method.name %></legend>
+  <dl>
+    <dt><%= I18n.t("spree.identifier") %>:</dt>
+    <dd><%= payment.number %></dd>
+    <dt><%= Spree::Payment.human_attribute_name(:response_code) %>:</dt>
+    <dd><input type="text" readonly value="<%= payment.transaction_id %>" class="form-control" /></dd>
+  </dl>
+</fieldset>

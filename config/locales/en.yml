@@ -6,6 +6,8 @@ en:
   nexio:
     apms:
       braintree_pay_pal:
+        name: Braintree PayPal
+      pay_pal:
         name: PayPal
     errors:
       default_error: Something went wrong
@@ -25,3 +27,8 @@ en:
       expiry:
         invalid: Please enter a valid date
         blank: Please enter a valid date
+      capture:
+        payment_failed: The order payment failed
+        payment_method_mismatched: There is a mismatch in the payment method
+        order_mismatched: There is a mismatch in the order
+        order_in_wrong_state: The order is in the wrong state

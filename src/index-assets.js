@@ -1,7 +1,8 @@
-import { addNexioAPM, addNexioOwnForm, setupNexio } from './solidus-nexio'
+import { addNexioAPM, addNexioCustomerRedirect, addNexioOwnForm, setupNexio } from './solidus-nexio'
 
 window.addNexioOwnForm = addNexioOwnForm;
 window.addNexioAPM = addNexioAPM;
+window.addNexioCustomerRedirect = addNexioCustomerRedirect;
 window.setupNexio = setupNexio;
 
 Spree.ready(function($) {

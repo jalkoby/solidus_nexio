@@ -28,14 +28,21 @@ module SolidusNexio
 
     def setup_nexio_apm(payment_method, order, user: nil)
       setup_nexio_checkout
+      javascript_tag("window.addNexioAPM(#{payment_method.id}, #{apm_token_config(user, order, payment_method)});")
+    end
 
-      config = {
+    def setup_custom_redirect(payment_method, order, user: nil)
+      setup_nexio_checkout
+      javascript_tag("window.addNexioCustomerRedirect(#{payment_method.id}, #{apm_token_config(user, order, payment_method)});")
+    end
+
+    def apm_token_config(user, order, payment_method)
+      {
         data: NexioData.one_time_token(user: user, order: order),
         paths: {
           oneTimeToken: solidus_nexio.payment_method_one_time_tokens_path(payment_method)
         }
-      }
-      javascript_tag("window.addNexioAPM(#{payment_method.id}, #{config.to_json});")
+      }.to_json
     end
 
     def setup_nexio_checkout
