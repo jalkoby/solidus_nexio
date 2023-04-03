@@ -22,7 +22,45 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+This is a example of Spree config for Paragon in `config/initializers/spree.rb`
+```
+Spree.config do |config|
+  ...
+
+  Rails.configuration.after_initialize do
+    config.static_model_preferences.add(
+      SolidusNexio::PaymentMethod,
+      'nexio',
+      server: ENV['NEXIO_ENV'] || 'sandbox', # production || sandbox
+      merchant_id: ENV['NEXIO_MERCHANT_ID'],
+      auth_token: ENV['NEXIO_AUTH_TOKEN'],
+      public_key: ENV['NEXIO_PUBLIC_KEY'],
+      three_d_secure: ENV['NEXIO_THREE_D_SECURE'].present?
+    )
+
+    config.static_model_preferences.add(
+      SolidusNexio::AlternativePaymentMethod,
+      'braintree_paypal_apm',
+      server: ENV['NEXIO_ENV'] || 'sandbox', # production || sandbox
+      merchant_id: ENV['NEXIO_MERCHANT_ID'],
+      auth_token: ENV['NEXIO_AUTH_TOKEN'],
+      payment_method: 'braintreePayPal',
+      save_token: true
+    )
+    Spree::PaymentMethod
+    config.static_model_preferences.add(
+      SolidusNexio::AlternativePaymentMethod,
+      'paypal_redirect',
+      server: ENV['NEXIO_ENV'] || 'sandbox', # production || sandbox
+      merchant_id: ENV['NEXIO_MERCHANT_ID'],
+      auth_token: ENV['NEXIO_AUTH_TOKEN'],
+      payment_method: 'payPal',
+      save_token: true,
+      customer_redirect: true
+    )
+  end
+end
+```
 
 ## Frontend Development
 
