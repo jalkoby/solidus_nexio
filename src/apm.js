@@ -28,8 +28,8 @@ const fetchValidEvent = (data) => {
   }
 }
 
-const stretchIFrame = () => {
-  const iframe = $('iframe.' + nexioApmIFrameClass);
+const stretchIFrame = (iframe_id) => {
+  const iframe = $(`iframe#${iframe_id}`);
   iframe.css('height', '100%');
   iframe.css('position', 'fixed');
   iframe.css('width', '100%');
@@ -38,8 +38,8 @@ const stretchIFrame = () => {
   iframe.css('z-index', '1001');
 }
 
-const restoreIFrameSize = () => {
-  const iframe = $('iframe.' + nexioApmIFrameClass);
+const restoreIFrameSize = (iframe_id) => {
+  const iframe = $(`iframe#${iframe_id}`);
   iframe.css('height', '50px');
   iframe.css('position', '');
   iframe.css('width', '');
@@ -57,8 +57,10 @@ export default class {
   setup(form, fields) {
     fields.classList.add('solidus-nexio-apm');
     const payment_slug = fields.dataset.nexioPaymentMethod;
+    const iframe_id = `nexio-${payment_slug}-apm-iframe`;
     getOneTimeToken(this.config).then(data => {
       let iframe = document.createElement('iframe');
+      iframe.id = iframe_id;
       window.addEventListener('message', e => {
         if (iframe.contentWindow !== e.source) return;
         let data = e.data;
@@ -68,20 +70,20 @@ export default class {
             fields.classList.add('solidus-nexio-apm--loaded');
             break;
           case 'zoid_delegate_paypal_checkout':
-            stretchIFrame();
+            if (payment_slug == 'braintreePayPal') stretchIFrame(iframe_id);
             break;
           case 'success':
-            restoreIFrameSize();
+            if (payment_slug == 'braintreePayPal') restoreIFrameSize(iframe_id);
             submitForm(form, fields, data.data);
             break;
           case 'error':
-            restoreIFrameSize();
+            if (payment_slug == 'braintreePayPal') restoreIFrameSize(iframe_id);
             hideErrors(fields);
             showError(fields, 'base', data.data.message || 'nexio_apm_payment_failed');
             break;
         }
       });
-      iframe.setAttribute('src', data.iframe_url);
+      iframe.setAttribute('src', data.button_urls[payment_slug]);
       iframe.classList.add(nexioApmIFrameClass);
       iframe.setAttribute('scrolling', 'no');
       iframe.style.cssText = 'overflow:hidden';
