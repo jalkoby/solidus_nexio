@@ -9,7 +9,7 @@ module SolidusNexio
     enum kind: {
       braintree_pay_pal: 0,
       pay_pal: 1,
-      apple_pay_auth_net: 2
+      apple_pay_cyber_source: 2
     }
 
     def reusable?

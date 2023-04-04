@@ -14,7 +14,7 @@ module SolidusNexio
     private
 
     def one_time_token_params
-      result = params.require(:data).permit(:currency, :callback_url,
+      result = params.require(:data).permit(:currency, :callback_url, :request_domain,
                                             address: %i[address1 address2 city country phone zip state],
                                             billing_address: %i[address1 address2 city country phone zip state],
                                             customer: %i[first_name last_name email],
@@ -22,6 +22,7 @@ module SolidusNexio
 
       if payment_method.is_a?(AlternativePaymentMethod)
         result[:callback_url] ||= capture_payment_method_alternative_payments_url(payment_method)
+        result[:request_domain] ||= request.domain
       else
         result.delete(:callback_url)
       end
