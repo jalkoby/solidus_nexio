@@ -4,8 +4,8 @@ module SolidusNexio
   module NexioData
     extend self
 
-    def one_time_token(order:, user:)
-      acc = build_config
+    def one_time_token(order:, user:, options: {})
+      acc = build_config.merge(options)
 
       if order
         add_order_data(acc, order)
@@ -63,7 +63,7 @@ module SolidusNexio
         country: address.country&.iso.to_s,
         phone: address.phone,
         zip: address.zipcode,
-        state: address.state_name
+        state: address.state&.abbr
       }
     end
 

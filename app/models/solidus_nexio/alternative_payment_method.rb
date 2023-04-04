@@ -10,6 +10,7 @@ module SolidusNexio
     preference(:payment_method, :string, default: nil)
     preference(:save_token, :boolean, default: false)
     preference(:customer_redirect, :boolean, default: false)
+    preference(:token_domain_presence, :string, default: nil)
 
     def partial_name
       'nexio_apm'
@@ -25,7 +26,8 @@ module SolidusNexio
         payment_method: preferred_payment_method,
         save_token: preferred_save_token,
         is_auth_only: !auto_capture?
-      }.merge!(options)
+      }.merge!(description_payload(order, options), request_domain_payload(options), options)
+
       gateway.generate_token(amount.to_money.cents, params)
     end
 
@@ -37,6 +39,29 @@ module SolidusNexio
 
     def gateway_class
       ActiveMerchant::Billing::NexioApmGateway
+    end
+
+    def request_domain_payload(options)
+      request_domain = options.delete(:request_domain)
+      return {} unless request_domain && preferred_token_domain_presence.present?
+
+      {
+        payload: {
+          data: {
+            preferred_token_domain_presence.to_sym => request_domain
+          }
+        }
+      }
+    end
+
+    def description_payload(_order, _options)
+      {
+        payload: {
+          data: {
+            description: "eComm #{preferred_payment_method} payment"
+          }
+        }
+      }
     end
   end
 end
