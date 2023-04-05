@@ -37,7 +37,6 @@ Spree.config do |config|
       public_key: ENV['NEXIO_PUBLIC_KEY'],
       three_d_secure: ENV['NEXIO_THREE_D_SECURE'].present?
     )
-
     config.static_model_preferences.add(
       SolidusNexio::AlternativePaymentMethod,
       'braintree_paypal_apm',
@@ -57,6 +56,16 @@ Spree.config do |config|
       payment_method: 'payPal',
       save_token: true,
       customer_redirect: true
+    )
+    config.static_model_preferences.add(
+      SolidusNexio::AlternativePaymentMethod,
+      'apple_pay_by_cyber_source',
+      server: ENV.fetch('NEXIO_ENV', 'sandbox'), # production || sandbox
+      merchant_id: ENV['NEXIO_MERCHANT_ID'],
+      auth_token: ENV['NEXIO_AUTH_TOKEN'],
+      payment_method: 'applePayCyberSource',
+      token_domain_presence: 'applePayDomain',
+      save_token: true
     )
   end
 end
