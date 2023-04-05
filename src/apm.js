@@ -87,7 +87,7 @@ export default class {
       iframe.classList.add(nexioApmIFrameClass);
       iframe.setAttribute('scrolling', 'no');
       iframe.style.cssText = 'overflow:hidden';
-      if (payment_slug.includes('applePay')) {
+      if (payment_slug.includes('applePay') && data.script_url) {
         let applePayScript = document.createElement('script');
         applePayScript.setAttribute('src', data.script_url);
         fields.appendChild(applePayScript);
