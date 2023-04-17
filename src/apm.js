@@ -65,6 +65,9 @@ export default class {
         if (iframe.contentWindow !== e.source) return;
         let data = e.data;
         let iframe_event = fetchValidEvent(data);
+        if (typeof iframe_event === 'string' && iframe_event.match(/loaded$/i)) {
+          iframe_event = 'loaded';
+        }
         switch (iframe_event) {
           case 'loaded':
             fields.classList.add('solidus-nexio-apm--loaded');
