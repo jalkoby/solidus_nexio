@@ -22,11 +22,15 @@ module SolidusNexio
 
       if payment_method.is_a?(AlternativePaymentMethod)
         result[:callback_url] ||= capture_payment_method_alternative_payments_url(payment_method)
-        result[:request_domain] ||= request.domain
+        result[:request_domain] ||= request_domain
       else
         result.delete(:callback_url)
       end
       result
+    end
+
+    def request_domain
+      request.domain(7)
     end
   end
 end
