@@ -74,6 +74,12 @@ module SolidusNexio
       gateway.store(card, options.except(:card, :one_time_token))
     end
 
+    def try_void(payment)
+      return false if payment.completed?
+
+      void(payment.source.transaction_id)
+    end
+
     private
 
     def gateway_class
