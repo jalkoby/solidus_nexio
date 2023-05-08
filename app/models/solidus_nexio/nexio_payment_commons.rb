@@ -12,7 +12,7 @@ module SolidusNexio
 
     def cancel(id)
       transaction = gateway.get_transaction(id)
-      return unless transaction
+      return error_response(id, 'not found') unless transaction
 
       if Mappings.settled?(transaction.status)
         credit(transaction.amount.to_money.cents, id)
@@ -32,6 +32,11 @@ module SolidusNexio
         result.merge!(SolidusNexio::NexioData.purchase(options[:originator].order))
       end
       result
+    end
+
+    def error_response(transaction_id, code)
+      error_mess = "The transaction ID:#{transaction_id} is #{code} with Nexio API"
+      OpenStruct.new('success?': false, to_yml: error_mess)
     end
   end
 end

@@ -35,6 +35,10 @@ module SolidusNexio
       ApmSource
     end
 
+    def try_void(payment)
+      cancel(payment.response_code)
+    end
+
     private
 
     def gateway_class

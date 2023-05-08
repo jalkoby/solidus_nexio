@@ -24,12 +24,7 @@ module SolidusNexio
     private
 
     def current_order_params
-      {
-        currency: current_pricing_options.currency,
-        guest_token: cookies.signed[:guest_token],
-        store_id: current_store.id,
-        user_id: try_spree_current_user.try(:id)
-      }.tap do |order_params|
+      super.tap do |order_params|
         order_params.delete(:user_id) if order_params[:guest_token].present? && order_params[:user_id].blank?
       end
     end
