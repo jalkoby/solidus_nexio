@@ -75,9 +75,7 @@ module SolidusNexio
     end
 
     def try_void(payment)
-      return false if payment.completed?
-
-      void(payment.source.transaction_id)
+      void(payment.response_code)
     end
 
     private
