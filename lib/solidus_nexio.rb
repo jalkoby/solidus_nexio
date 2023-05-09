@@ -11,7 +11,7 @@ module SolidusNexio
     'solidus_nexio_solidus_nexio_'
   end
 
-  @config = OpenStruct.new(merchant_secrets: [], save_webhooks: false, webhooks: [])
+  @config = OpenStruct.new(merchant_secrets: [], save_webhooks: false, webhooks: [], payment_confirmation_timeout: 3)
 
   def self.config
     yield @config if block_given?
