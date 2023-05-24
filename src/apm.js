@@ -58,6 +58,10 @@ export default class {
     fields.classList.add('solidus-nexio-apm');
     const payment_slug = fields.dataset.nexioPaymentMethod;
     const iframe_id = `nexio-${payment_slug}-apm-iframe`;
+
+    let spinner = form.getElementsByClassName("spinner")[0];
+    let button = form.getElementsByClassName("solidus-nexio-apm")[0];
+
     getOneTimeToken(this.config).then(data => {
       let iframe = document.createElement('iframe');
       iframe.id = iframe_id;
@@ -70,13 +74,22 @@ export default class {
         }
         switch (iframe_event) {
           case 'loaded':
-            fields.classList.add('solidus-nexio-apm--loaded');
+            if (payment_slug == 'applePayCyberSource') {
+              if (spinner) { spinner.classList.add("hidden"); }
+            }
+
             break;
           case 'zoid_delegate_paypal_checkout':
             if (payment_slug == 'braintreePayPal') stretchIFrame(iframe_id);
             break;
           case 'success':
             if (payment_slug == 'braintreePayPal') restoreIFrameSize(iframe_id);
+
+            if (payment_slug == 'applePayCyberSource') {
+              if (spinner) { spinner.classList.remove("hidden"); }
+              if (button) { button.classList.add("hidden"); }
+            }
+
             submitForm(form, fields, data.data);
             break;
           case 'error':
