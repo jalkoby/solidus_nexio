@@ -2,6 +2,7 @@ import { getOneTimeToken } from './api'
 import { hideErrors, setCardValue, showError } from './dom'
 
 const nexioApmIFrameClass = 'solidus-nexio-apm-iframe';
+const nexioApmClassPrefix = 'nexio-apm--';
 
 const submitForm = (form, fields, data) => {
   setCardValue(fields, 'nexio_apm_transaction_id', data.id);
@@ -48,6 +49,11 @@ const restoreIFrameSize = (iframe_id) => {
   iframe.css('z-index', '');
 }
 
+const switchApmElementClass = (el, event) => {
+  el.classList.remove(`${nexioApmClassPrefix}loaded`);
+  el.classList.add(`${nexioApmClassPrefix}${event}`);
+}
+
 export default class {
   constructor(id, config) {
     this.id = id;
@@ -55,7 +61,7 @@ export default class {
   }
 
   setup(form, fields) {
-    fields.classList.add('solidus-nexio-apm');
+    form.classList.add('solidus-nexio-apm');
     const payment_slug = fields.dataset.nexioPaymentMethod;
     const iframe_id = `nexio-${payment_slug}-apm-iframe`;
     getOneTimeToken(this.config).then(data => {
@@ -70,16 +76,18 @@ export default class {
         }
         switch (iframe_event) {
           case 'loaded':
-            fields.classList.add('solidus-nexio-apm--loaded');
+            switchApmElementClass(form, 'loaded')
             break;
           case 'zoid_delegate_paypal_checkout':
             if (payment_slug == 'braintreePayPal') stretchIFrame(iframe_id);
             break;
           case 'success':
+            switchApmElementClass(form, 'success')
             if (payment_slug == 'braintreePayPal') restoreIFrameSize(iframe_id);
             submitForm(form, fields, data.data);
             break;
           case 'error':
+            switchApmElementClass(form, 'error')
             if (payment_slug == 'braintreePayPal') restoreIFrameSize(iframe_id);
             hideErrors(fields);
             showError(fields, 'base', data.data.message || 'nexio_apm_payment_failed');
