@@ -24,7 +24,7 @@ module SolidusNexio
       return unless response_code.present?
 
       transaction = payment_method.gateway.get_transaction(response_code)
-      unless transaction
+      unless transaction&.data.present? && transaction.status.present?
         error_message = "#{action}: The transaction is not found."
         record_response(build_response(false, error_message))
         return
