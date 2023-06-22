@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module SolidusNexio
-  class PaymentMethod < SolidusSupport.payment_method_parent_class(credit_card: true)
+  class PaymentMethod < Spree::PaymentMethod::CreditCard
     include NexioPaymentCommons
 
     ProcessResult = Struct.new(:state, :data)

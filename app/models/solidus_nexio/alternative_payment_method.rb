@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module SolidusNexio
-  class AlternativePaymentMethod < SolidusSupport.payment_method_parent_class
+  class AlternativePaymentMethod < Spree::PaymentMethod
     include NexioPaymentCommons
 
     preference(:server, :string, default: 'test')
